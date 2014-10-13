@@ -37,3 +37,27 @@ cacheSolve <- function(x, ...) {
   x$setInverse(inverse)
   inverse
 }
+
+## simple test case for checking cache generation and retrieval
+## correctness
+test <- function(x) {
+  # 1. prepare the "matrix"
+  message("Running test with: ", x)
+  cm <- makeCacheMatrix(x)
+  ourInverse <- cacheSolve(cm) # 2. compute the inverse
+  cachedInverse <- cacheSolve(cm) # 3. repeat, forcing cache use
+  rm(cm)
+  # compare the results to each other and a direct call to solve()
+  if (identical(ourInverse, cachedInverse) &
+      identical(ourInverse, solve(x))) {
+    print("Test succesfully completed!")
+  } else {
+    warning("Cached inverse does not match the calculated one!")
+    print(ourInverse)
+    print(cachedInverse)
+    solve(x)
+    stop()
+  }
+}
+test(matrix(1:4, 2, 2))
+test(matrix(c(1,3:9,11), 3, 3))
